@@ -12,4 +12,18 @@
     tools:context="com.nyeintnyeint.talentup1.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
+    <com.malinskiy.superrecyclerview.SuperRecyclerView
+        android:id="@+id/phone_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_empty="@layout/empty_view"
+        app:layout_moreProgress="@layout/view_more_progress"
+        app:mainLayoutId="@layout/layout_recyclerview_verticalscroll"
+        app:recyclerClipToPadding="false"
+        app:recyclerPaddingLeft="5dp"
+        android:layout_marginTop="5dp"
+        app:recyclerPaddingRight="5dp"
+        app:scrollbarStyle="outsideOverlay">
+    </com.malinskiy.superrecyclerview.SuperRecyclerView>
+
 </RelativeLayout>

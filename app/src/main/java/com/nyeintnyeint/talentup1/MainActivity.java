@@ -2,19 +2,43 @@ package com.nyeintnyeint.talentup1;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
+
+import com.malinskiy.superrecyclerview.OnMoreListener;
+import com.malinskiy.superrecyclerview.SuperRecyclerView;
+import com.nyeintnyeint.talentup1.adapter.PhoneAdapter;
+import com.nyeintnyeint.talentup1.api.MainServeices;
+import com.nyeintnyeint.talentup1.api.Mainapi;
+import com.nyeintnyeint.talentup1.model.Phone;
+import com.nyeintnyeint.talentup1.model.Phones;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    SuperRecyclerView mRecycler;
+    PhoneAdapter mAdapter;
+    List<Phone> phoneList=new ArrayList<>();
+
+    int pagination=1;
+    int total;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,13 +57,70 @@ public class MainActivity extends AppCompatActivity
         });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
+        //my code start
+        mRecycler=(SuperRecyclerView)findViewById(R.id.phone_recycler);
+        LinearLayoutManager lm=new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.VERTICAL,false);
+        mRecycler.setLayoutManager(lm);
+        mRecycler.getRecyclerView().setHasFixedSize(true);
+
+        mAdapter=new PhoneAdapter(getApplicationContext(),phoneList);
+        mRecycler.setAdapter(mAdapter);
+
+        dataDownload();
+
+        mRecycler.setOnMoreListener(new OnMoreListener() {
+            @Override
+            public void onMoreAsked(int overallItemsCount, int itemsBeforeMore, int maxLastVisiblePosition) {
+                pagination+=1;
+                Call<Phones> call=Mainapi.createService(MainServeices.class).getPhoneData(pagination);
+                call.enqueue(new Callback<Phones>() {
+                    @Override
+                    public void onResponse(Call<Phones> call, Response<Phones> response) {
+                        total=response.body().getTotal();
+                        if (pagination<=total){
+                            phoneList.addAll(response.body().getPhoneList());
+                            mAdapter.notifyDataSetChanged();
+                        }else {
+                            mRecycler.hideMoreProgress();
+                            Toast.makeText(getApplicationContext(),"no more to load",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Phones> call, Throwable t) {
+
+                    }
+                });
+
+            }
+        });
+
+    }
+
+    private void dataDownload(){
+        Call<Phones> call= Mainapi.createService(MainServeices.class).getPhoneData(1);
+        call.enqueue(new Callback<Phones>() {
+            @Override
+            public void onResponse(Call<Phones> call, Response<Phones> response) {
+//                Log.d("NYEINT DATA",response.body().getPhoneList().get(1).getPhone_brand());
+                phoneList.addAll(response.body().getPhoneList());
+                mAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(Call<Phones> call, Throwable t) {
+
+            }
+        });
     }
 
     @Override
