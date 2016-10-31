@@ -46,6 +46,9 @@ public class Phone {
     @SerializedName("cpu")
     private String cpu;
 
+    @SerializedName("ram")
+    private String ram;
+
     @SerializedName("os_version")
     private String os_version;
 
@@ -244,5 +247,9 @@ public class Phone {
 
     public String getImage3() {
         return image3;
+    }
+
+    public String getRam() {
+        return ram;
     }
 }

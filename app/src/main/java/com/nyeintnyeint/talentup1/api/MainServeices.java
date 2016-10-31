@@ -1,9 +1,11 @@
 package com.nyeintnyeint.talentup1.api;
 
+import com.nyeintnyeint.talentup1.model.Phone;
 import com.nyeintnyeint.talentup1.model.Phones;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
@@ -13,5 +15,9 @@ public interface MainServeices {
 
     @GET("latestPhones")
     Call<Phones> getPhoneData(@Query("page") int page_id);
+
+    @GET("phone/{id}")
+    Call<Phone> getPhoneDetails(@Path("id") int id);
+
 
 }

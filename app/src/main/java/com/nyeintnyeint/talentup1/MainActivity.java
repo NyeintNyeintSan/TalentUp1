@@ -1,5 +1,6 @@
 package com.nyeintnyeint.talentup1;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -31,7 +32,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,PhoneAdapter.PhoneItemClick {
 
     SuperRecyclerView mRecycler;
     PhoneAdapter mAdapter;
@@ -72,7 +73,7 @@ public class MainActivity extends AppCompatActivity
         mRecycler.setLayoutManager(lm);
         mRecycler.getRecyclerView().setHasFixedSize(true);
 
-        mAdapter=new PhoneAdapter(getApplicationContext(),phoneList);
+        mAdapter=new PhoneAdapter(getApplicationContext(),phoneList,this);
         mRecycler.setAdapter(mAdapter);
 
         dataDownload();
@@ -178,5 +179,15 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void OnItemClick(Phone itemClicked) {
+        Bundle args=new Bundle();
+        args.putInt("key",itemClicked.getPhone_id());
+
+        Intent intent=new Intent(MainActivity.this,PhoneDetails.class);
+        intent.putExtras(args);
+        startActivity(intent);
     }
 }

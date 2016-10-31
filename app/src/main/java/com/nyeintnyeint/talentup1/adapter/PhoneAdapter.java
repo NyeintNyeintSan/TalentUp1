@@ -21,11 +21,13 @@ import java.util.List;
 public class PhoneAdapter extends RecyclerView.Adapter<PhoneAdapter.PhoneViewHolder> {
     Context context;
     List<Phone> phoneList;
+    PhoneItemClick phoneItemClick;
 
 
-    public PhoneAdapter(Context context, List<Phone> phoneList) {
+    public PhoneAdapter(Context context, List<Phone> phoneList, PhoneItemClick phoneItemClick) {
         this.context = context;
         this.phoneList = phoneList;
+        this.phoneItemClick = phoneItemClick;
     }
 
     @Override
@@ -50,7 +52,7 @@ public class PhoneAdapter extends RecyclerView.Adapter<PhoneAdapter.PhoneViewHol
         return phoneList.size();
     }
 
-    public class PhoneViewHolder extends RecyclerView.ViewHolder {
+    public class PhoneViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         ImageView imgPhone;
         TextView txtBrand,txtOs,txtPrice;
         public PhoneViewHolder(View itemView) {
@@ -60,8 +62,18 @@ public class PhoneAdapter extends RecyclerView.Adapter<PhoneAdapter.PhoneViewHol
             txtBrand=(TextView)itemView.findViewById(R.id.txt_brand_name);
             txtOs=(TextView)itemView.findViewById(R.id.txt_os);
             txtPrice=(TextView)itemView.findViewById(R.id.txt_price);
+            itemView.setOnClickListener(this);
 
 
         }
+
+        @Override
+        public void onClick(View view) {
+            phoneItemClick.OnItemClick(phoneList.get(getLayoutPosition()));
+        }
+    }
+
+    public static interface PhoneItemClick{
+        public void OnItemClick(Phone itemClicked);
     }
 }
